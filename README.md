@@ -1,4 +1,3 @@
-# Multiagente_Calsificador_de_preguntas
 # Multi-Agent QA System
 
 Este repositorio contiene la implementación de un **sistema multi-agente de preguntas y respuestas** basado en LangGraph y FastAPI. Cada agente especializado (legal, contable, médico, genérico) procesa la entrada de forma secuencial según la categoría detectada.
@@ -27,7 +26,7 @@ multi_agent/
 
 ---
 
-## Requisitos
+## 🛠️ Requisitos
 
 - **Python 3.11+**  
 - **pip**  
@@ -68,13 +67,24 @@ multi_agent/
 
 ---
 
-## Ejecución local (FastAPI + Uvicorn)
+## ▶️ Ejecución local (FastAPI + Uvicorn)
 
-1. **Arranca el servidor**  
-   ```bash
-   cd app
-   uvicorn main_multi_agent:api --reload --host 0.0.0.0 --port 8000
-   ```
+Hay varias formas de ejecutar el servidor:
+
+- **Desde cualquier terminal**  
+  ```bash
+  cd app
+  uvicorn main_multi_agent:api --reload --host 0.0.0.0 --port 8000
+  ```
+- **En Visual Studio Code**  
+  1. Abre el proyecto en VS Code.  
+  2. Pulsa <kbd>Ctrl+`</kbd> (o ve a *View → Terminal*) para abrir la terminal integrada.  
+  3. Asegúrate de estar en la carpeta `multi_agent/app`.  
+  4. Ejecuta:
+     ```bash
+     uvicorn main_multi_agent:api --reload --host 0.0.0.0 --port 8000
+     ```
+
 2. **Prueba el endpoint**  
    En tu navegador o con `curl`/Postman:
    ```
@@ -96,7 +106,7 @@ multi_agent/
 
 ---
 
-## Despliegue con Docker
+## 🐳 Despliegue con Docker
 
 1. **Construye la imagen**  
    Desde la carpeta `multi_agent/`:
@@ -118,7 +128,7 @@ multi_agent/
 
 ---
 
-## Descripción rápida del flujo multi-agente
+## 🔍 Descripción rápida del flujo multi-agente
 
 1. **Clasificador**: LLMChain que etiqueta la pregunta (`category_id`).  
 2. **Router**: Decide a qué nodo enviar (legal, contable, médico o genérico).  
