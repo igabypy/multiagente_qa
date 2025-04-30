@@ -74,7 +74,7 @@ Hay varias formas de ejecutar el servidor:
 - **Desde cualquier terminal**  
   ```bash
   cd app
-  uvicorn main_multi_agent:api --reload --host 0.0.0.0 --port 8000
+  uvicorn main_multi_agent:api --reload
   ```
 - **En Visual Studio Code**  
   1. Abre el proyecto en VS Code.  
