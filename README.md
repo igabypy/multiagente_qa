@@ -4,7 +4,7 @@ Este repositorio contiene la implementación de un **sistema multi-agente de pre
 
 ---
 
-## 📂 Estructura de carpetas
+## 1. Estructura de carpetas
 
 ```
 multi_agent/
@@ -26,7 +26,7 @@ multi_agent/
 
 ---
 
-## 🛠️ Requisitos
+## 2. Requisitos
 
 - **Python 3.11+**  
 - **pip**  
@@ -35,15 +35,15 @@ multi_agent/
 
 ---
 
-## ⚙️ Instalación y configuración
+## 3.  Instalación y configuración
 
-1. **Clona este repositorio**  
+3.1 **Clona este repositorio**  
    ```bash
    git clone https://github.com/tu-usuario/tu-repo-multi-agent.git
    cd tu-repo-multi-agent/multi_agent
    ```
 
-2. **Crea y activa un entorno virtual**  
+3.2 **Crea y activa un entorno virtual**  
    ```bash
    python -m venv .venv
    # Windows
@@ -52,13 +52,13 @@ multi_agent/
    source .venv/bin/activate
    ```
 
-3. **Instala dependencias**  
+3.3 **Instala dependencias**  
    ```bash
    pip install --upgrade pip
    pip install -r app/requirements_multi_agent.txt
    ```
 
-4. **Configura variables de entorno**  
+3.4 **Configura variables de entorno**  
    Crea un archivo `.env` en la raíz de `multi_agent/` con:
    ```ini
    OPENAI_API_KEY=sk-...
@@ -67,25 +67,25 @@ multi_agent/
 
 ---
 
-## ▶️ Ejecución local (FastAPI + Uvicorn)
+## 4. Ejecución local (FastAPI + Uvicorn)
 
 Hay varias formas de ejecutar el servidor:
 
 - **Desde cualquier terminal**  
   ```bash
-  cd app
-  uvicorn main_multi_agent:api --reload
+  #sitúate en el root, debes ver app
+  uvicorn app.main_multi_agent:api --reload
   ```
 - **En Visual Studio Code**  
-  1. Abre el proyecto en VS Code.  
-  2. Pulsa <kbd>Ctrl+`</kbd> (o ve a *View → Terminal*) para abrir la terminal integrada.  
-  3. Asegúrate de estar en la carpeta `multi_agent/app`.  
-  4. Ejecuta:
+  4.1 Abre el proyecto en VS Code.  
+  4.2 Pulsa <kbd>Ctrl+`</kbd> (o ve a *View → Terminal*) para abrir la terminal integrada.  
+  4.3 Asegúrate de estar en la carpeta `multi_agent/app`.  
+  4.4 Ejecuta:
      ```bash
      uvicorn main_multi_agent:api --reload --host 0.0.0.0 --port 8000
      ```
 
-2. **Prueba el endpoint**  
+A) **Prueba el endpoint**  
    En tu navegador o con `curl`/Postman:
    ```
    POST http://localhost:8000/qa
@@ -104,36 +104,43 @@ Hay varias formas de ejecutar el servidor:
    }
    ```
 
+En cualquier terminal en tu local:
+   ```
+   curl -X POST http://127.0.0.1:8000/qa -H "Content-Type: application/json" -d '{"question": "¿Qué es un contrato de arrendamiento?"}' 
+  ```
+
 ---
 
-## 🐳 Despliegue con Docker
+## 5. Despliegue con Docker
 
-1. **Construye la imagen**  
+5.1 **Construye la imagen**  
    Desde la carpeta `multi_agent/`:
    ```bash
    docker build -f Dockerfile.txt -t multi-agent-qa .
    ```
 
-2. **Arranca con Docker Compose**  
+5.2 **Arranca con Docker Compose**  
    ```bash
    docker-compose up --build
    ```
    - El servicio `qa` quedará expuesto en el puerto **8000**.
 
-3. **Comprueba el servicio**  
+5.3 **Comprueba el servicio**  
    Igual que en la sección de ejecución local, apunta a:
    ```
-   http://localhost:8000/qa
+   http://localhost:8000/docs
    ```
+
+   después click en **POST** y luego en **try it out**.
 
 ---
 
-## 🔍 Descripción rápida del flujo multi-agente
+## 6. Descripción rápida del flujo multi-agente
 
-1. **Clasificador**: LLMChain que etiqueta la pregunta (`category_id`).  
-2. **Router**: Decide a qué nodo enviar (legal, contable, médico o genérico).  
-3. **Nodo de dominio**: Cada especialista ejecuta su propio LLMChain con su prompt.  
-4. **Respuesta**: Estado enriquecido con `category_label` y `answer`.  
+6.1 **Clasificador**: LLMChain que etiqueta la pregunta (`category_id`).  
+6.2 **Router**: Decide a qué nodo enviar (legal, contable, médico o genérico).  
+6.3 **Nodo de dominio**: Cada especialista ejecuta su propio LLMChain con su prompt.  
+6.4 **Respuesta**: Estado enriquecido con `category_label` y `answer`.  
 
 El grafo se construye en `app/multi_agent.py` y se compila en un objeto `app_agent` que ofrece el método `.invoke({ "question": ... })`.
 

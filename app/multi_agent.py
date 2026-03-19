@@ -5,12 +5,11 @@ from typing import TypedDict
 from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
-from langchain.prompts import (
+from langchain_core.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
     ChatPromptTemplate,
 )
-from langchain.chains import LLMChain
 from langgraph.graph import StateGraph, END
 
 # Load environment variables from .env
@@ -30,16 +29,15 @@ def load_chat_prompt(name: str) -> ChatPromptTemplate:
     human = HumanMessagePromptTemplate.from_template(text)
     return ChatPromptTemplate.from_messages([system_es, human])
 
-# LLM chains
-classifier_chain = LLMChain(
-    llm=ChatOpenAI(model_name=MODEL_NAME, temperature=0.2),
-    prompt=load_chat_prompt("classifier"),
-)
+# LCEL chains: prompt | llm (reemplaza el deprecado LLMChain)
+llm = ChatOpenAI(model_name=MODEL_NAME, temperature=0.2)
+
+classifier_chain = load_chat_prompt("classifier") | llm
 domain_chains = {
-    1: LLMChain(llm=ChatOpenAI(model_name=MODEL_NAME, temperature=0.2), prompt=load_chat_prompt("legal")),
-    2: LLMChain(llm=ChatOpenAI(model_name=MODEL_NAME, temperature=0.2), prompt=load_chat_prompt("accounting")),
-    3: LLMChain(llm=ChatOpenAI(model_name=MODEL_NAME, temperature=0.2), prompt=load_chat_prompt("medical")),
-    4: LLMChain(llm=ChatOpenAI(model_name=MODEL_NAME, temperature=0.2), prompt=load_chat_prompt("generic")),
+    1: load_chat_prompt("legal") | llm,
+    2: load_chat_prompt("accounting") | llm,
+    3: load_chat_prompt("medical") | llm,
+    4: load_chat_prompt("generic") | llm,
 }
 
 # Define state type
@@ -53,8 +51,9 @@ class QAState(TypedDict):
 graph = StateGraph(state_schema=QAState)
 
 def classify_node(state: QAState) -> QAState:
-    # Run the classifier chain and strip whitespace
-    raw = classifier_chain.run(question=state["question"]).strip()
+    # .invoke() retorna un AIMessage; .content extrae el texto
+    result = classifier_chain.invoke({"question": state["question"]})
+    raw = result.content.strip()
 
     # Try to extract the JSON object from the raw response
     match = re.search(r"\{.*\}", raw, re.DOTALL)
@@ -80,9 +79,10 @@ def classify_node(state: QAState) -> QAState:
 graph.add_node("classifier", classify_node)
 
 # Domain nodes
-def domain_node(chain: LLMChain):
+def domain_node(chain):
     def _node(state: QAState) -> QAState:
-        state["answer"] = chain.run(question=state["question"])
+        result = chain.invoke({"question": state["question"]})
+        state["answer"] = result.content
         return state
     return _node
 
